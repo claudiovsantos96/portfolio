@@ -44,42 +44,48 @@ function hasCollision(pieces, activeId, col, row, cols, rows) {
   });
 }
 
+// --- Pure helpers (module-level, no React) ---
+function calcBoardDims() {
+  if (typeof window === "undefined") return { cols: 20, rows: 12 };
+  return {
+    cols: Math.floor(window.innerWidth / PITCH),
+    rows: Math.floor((window.innerHeight - NAVBAR_H) / PITCH),
+  };
+}
+function calcInitialPieces(cols, rows) {
+  const colOffset   = Math.max(0, Math.floor((cols - 14) / 2));
+  const leftH       = Math.min(8, rows - 1);
+  const rightTopH   = Math.min(4, Math.floor(leftH / 2));
+  const rightBotRow = rightTopH + 1;
+  const rightBotH   = Math.min(3, leftH - rightBotRow);
+  return [
+    { id: 1, col: colOffset + 0,  row: 0,           cols: 5, rows: leftH    },
+    { id: 2, col: colOffset + 6,  row: 0,           cols: 8, rows: rightTopH },
+    { id: 3, col: colOffset + 6,  row: rightBotRow, cols: 4, rows: rightBotH },
+    { id: 4, col: colOffset + 11, row: rightBotRow, cols: 3, rows: rightBotH },
+  ];
+}
+
 // --- Component ---
 export default function LegoBoard() {
-  // null until we know the viewport size (avoids SSR mismatch)
-  const [pieces, setPieces]       = useState(null);
+  const [boardCols, setBoardCols] = useState(() => calcBoardDims().cols);
+  const [boardRows, setBoardRows] = useState(() => calcBoardDims().rows);
+  const [pieces, setPieces]       = useState(() => {
+    const { cols, rows } = calcBoardDims();
+    return cols > 0 ? calcInitialPieces(cols, rows) : null;
+  });
   const [dragging, setDragging]   = useState(null);
-  const [boardCols, setBoardCols] = useState(20);
-  const [boardRows, setBoardRows] = useState(12);
   const boardRef                  = useRef(null);
 
-  // On mount: measure viewport → compute board grid → center initial pieces
+  // Resize listener only — no setState in synchronous effect body
   useEffect(() => {
-    function measure() {
-      const cols = Math.floor(window.innerWidth / PITCH);
-      const rows = Math.floor((window.innerHeight - NAVBAR_H) / PITCH);
+    function handleResize() {
+      const { cols, rows } = calcBoardDims();
       setBoardCols(cols);
       setBoardRows(rows);
-      return { cols, rows };
     }
-
-    const { cols, rows } = measure();
-
-    // Bento-grid layout: big card left, smaller cards right (centered in 14-col zone)
-    const colOffset   = Math.max(0, Math.floor((cols - 14) / 2));
-    const leftH       = Math.min(8, rows - 1);
-    const rightTopH   = Math.min(4, Math.floor(leftH / 2));
-    const rightBotRow = rightTopH + 1;
-    const rightBotH   = Math.min(3, leftH - rightBotRow);
-    setPieces([
-      { id: 1, col: colOffset + 0,  row: 0,           cols: 5, rows: leftH    }, // big left
-      { id: 2, col: colOffset + 6,  row: 0,           cols: 8, rows: rightTopH }, // top right
-      { id: 3, col: colOffset + 6,  row: rightBotRow, cols: 4, rows: rightBotH }, // bottom right A
-      { id: 4, col: colOffset + 11, row: rightBotRow, cols: 3, rows: rightBotH }, // bottom right B
-    ]);
-
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Window-level drag listeners (only active while dragging)

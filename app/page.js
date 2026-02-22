@@ -291,13 +291,14 @@ function ThoughtItem({ title, date }) {
 
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
 function ThemeToggle() {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("theme") !== "light";
+  });
 
   useEffect(() => {
-    const dark = localStorage.getItem("theme") !== "light";
-    setIsDark(dark);
-    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
-  }, []);
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+  }, [isDark]);
 
   function setMode(dark) {
     setIsDark(dark);
