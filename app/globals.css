@@ -1,22 +1,76 @@
 @import "tailwindcss";
 
-:root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-html {
-  scroll-behavior: smooth;
+/* ── Dark (default) ── */
+:root {
+  --bg:                  #0a0a0a;
+  --title:               #ffffff;
+  --body:                #d4d4d4;           /* neutral-300 */
+  --strike:              rgba(191,191,191,0.45);
+
+  --logo-border:         rgba(255,255,255,0.08);
+  --logo-shadow:         rgba(0,0,0,0.50);
+  --logo-highlight:      rgba(255,255,255,0.12);
+
+  --toggle-pill:         rgba(255,255,255,0.06);
+  --toggle-active-from:  #2e2e32;
+  --toggle-active-to:    #232327;
+  --toggle-active-border:rgba(255,255,255,0.04);
+  --toggle-active-shadow:0px 1px 2px rgba(0,0,0,0.45), inset 0px 1px 1px rgba(255,255,255,0.12);
+  --toggle-icon:         #d4d4d4;
+
+  --divider:             rgba(255,255,255,0.10);
+  --card-bg:             #171717;
+  --card-border:         rgba(255,255,255,0.20);
+
+  --topbar-bg:           rgba(10,10,10,0.85);
+  --section-hover:       rgba(255,255,255,0.04);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+/* ── Light ── */
+[data-theme="light"] {
+  --bg:                  #f5f5f5;
+  --title:               #111111;
+  --body:                #525252;           /* neutral-600 — readable on light bg */
+  --strike:              rgba(80,80,80,0.35);
+
+  --logo-border:         rgba(0,0,0,0.10);
+  --logo-shadow:         rgba(0,0,0,0.12);
+  --logo-highlight:      rgba(255,255,255,0.60);
+
+  --toggle-pill:         rgba(0,0,0,0.06);
+  --toggle-active-from:  #e8e8eb;
+  --toggle-active-to:    #dddde0;
+  --toggle-active-border:rgba(0,0,0,0.04);
+  --toggle-active-shadow:0px 1px 2px rgba(0,0,0,0.10), inset 0px 1px 1px rgba(255,255,255,0.70);
+  --toggle-icon:         #404040;
+
+  --divider:             rgba(0,0,0,0.10);
+  --card-bg:             #f0f0f0;
+  --card-border:         rgba(0,0,0,0.15);
+
+  --topbar-bg:           rgba(245,245,245,0.85);
+  --section-hover:       rgba(0,0,0,0.04);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin:      0;
+  padding:     0;
+  background:  var(--bg);
+  color:       var(--body);
+  font-family: var(--font-geist-mono), monospace;
+  transition:  background 200ms ease, color 200ms ease;
+}
+
+@keyframes carouselScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-1776px); }
 }
